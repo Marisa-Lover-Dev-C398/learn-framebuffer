@@ -5,10 +5,18 @@
 #include<sys/mman.h>
 #include<linux/fb.h>
 #include<stdint.h>
-#include<math.h>
 
 #define FB_PATH "/dev/fb0"
 
+int setdot(int x, int y, uint32_t* fbp, int line_length, int yres, uint32_t color)
+{
+  int l = (line_length / 4) * y + x;
+  if(l > line_length*yres){
+    return 1;
+  }
+  fbp[l] = color;
+  return 0;
+}
 int main(void)
 {
   int fb = open(FB_PATH,O_RDWR);
@@ -38,26 +46,12 @@ int main(void)
     return 1;
   }
   fflush(stdout);
-  sleep(1);
+  sleep(2);
   for(int i = 0; i < (sc_size / 4); i++) {
     fbp[i] = 0x000000;
   }
-  int y = 0;
-  int l = 0;
-  double t = 0.01;
-  int t2 = 250;
-  while(1){
-    for(int x=0;x < fb_width;x++) {
-      y = (int)(sin(x * t) * t2) + (fb_height / 2);
-      l = ((vfinfo.line_length/4) * y) + x;
-//      printf("debug: x=%d,y=%d\n",x,y);
-      fbp[l] = 0x00FF00;
-      msync(fbp, vfinfo.smem_len, MS_SYNC);
-      usleep(1000);
-    }
-    t += 0.005;
-    t2 += 2;
-    //(fb_height/2) + (int)(sin(x * 0.1)*1000);
-  }
+  setdot(100,100,fbp,vfinfo.line_length,fb_height,0xFF00FF);
+  setdot(100,90,fbp,vfinfo.line_length,fb_height, 0xFF00FF);
+  sleep(2);
   munmap(fbp,vfinfo.smem_len); 
 }

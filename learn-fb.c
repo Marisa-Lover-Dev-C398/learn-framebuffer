@@ -39,7 +39,9 @@ int main(void)
   fflush(stdout);
   sleep(2);
   for(int i = 0; i < (sc_size / 4); i++) {
-    fbp[i] = 0xFFFF00;
+    fbp[i] = 0x000000;
   }
+  fbp[((vfinfo.line_length/4)*(fb_height/2))] = 0x00FF00;
+  sleep(2);
   munmap(fbp,vfinfo.smem_len); 
 }
