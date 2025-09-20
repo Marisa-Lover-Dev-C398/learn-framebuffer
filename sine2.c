@@ -6,8 +6,16 @@
 #include<linux/fb.h>
 #include<stdint.h>
 #include<math.h>
+#include<string.h>
 
 #define FB_PATH "/dev/fb0"
+
+void setblack(uint32_t* fbp, size_t sc_size)
+{
+  for(int i = 0; i < (sc_size / 4); i++) {
+    fbp[i] = 0x000000;
+  }
+}
 
 int main(void)
 {
@@ -46,15 +54,36 @@ int main(void)
   int l = 0;
   double t = 0.01;
   int t2 = 250;
+  int wr_bf[3] = {0,0,0};
+  int cp_bf;
   while(1){
     for(int x=0;x < fb_width;x++) {
       y = (int)(sin(x * t) * t2) + (fb_height / 2);
       l = ((vfinfo.line_length/4) * y) + x;
-      fbp[l] = 0x00FF00;
-      usleep(1000);
+      cp_bf = wr_bf[0];
+      wr_bf[0] = l;
+      wr_bf[2] = wr_bf[1];
+      wr_bf[1] = cp_bf;
+
+      for(int i = 0; i < (sc_size / 4); i++) 
+      {
+        if(i == wr_bf[0]) {
+          fbp[i] = 0xFFFFFF;
+          //printf("[DETECT]: i=%d,l=%d,x=%d,y=%d\n",i,l,x,y);
+        }else if(i == wr_bf[1]){
+          fbp[i] = 0xAAAAAA;
+        }else if(i == wr_bf[2])
+        {
+          fbp[i] = 0x666666;
+        } else {
+          fbp[i] = 0x000000;
+        }
+      }
+      usleep(5000);
     }
-    t += 0.005;
-    t2 += 2;
+    setblack(fbp,sc_size);
+//    t += 0.005;
+//    t2 += 2;
     //(fb_height/2) + (int)(sin(x * 0.1)*1000);
   }
   munmap(fbp,vfinfo.smem_len); 
