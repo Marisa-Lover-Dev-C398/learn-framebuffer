@@ -5,8 +5,11 @@ LDFLAGS = -lm
 
 all: $(BIN_DIR)/learn-fb $(BIN_DIR)/sine 
 
-$(BIN_DIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BIN_DIR)/%.o: %.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
