@@ -16,7 +16,30 @@ void setblack(uint32_t* fbp, size_t sc_size)
     fbp[i] = 0x000000;
   }
 }
-
+void fillx(unit32_t* fbp, int x, int y, int width, int height, uint32_t color)
+{
+  for(int i = y; i < height; i++)
+  {
+    for(int j = x; j < width j++)
+    {
+      fbp[loc2addr(x , y, )]
+    }
+  }
+}
+int loc2addr(int x, int y, int fb_line_length int fb_yres)
+{
+  return (y * (fb_line_length / 4) + x);
+}
+int isinclude()
+{
+  
+}
+//* feature
+  void dsync()
+  {
+    memcpy(fbp, fxfb, sc_size);
+  }
+*//
 int main(void)
 {
   int fb = open(FB_PATH,O_RDWR);
@@ -63,7 +86,7 @@ int main(void)
       cp_bf = wr_bf[0];
       wr_bf[0] = l;
       wr_bf[2] = wr_bf[1];
-      wr_bf[1] = cp_bf;  //めんどかったんだよ.......うん.....まっ...まずはmake it workだもんね......
+      wr_bf[1] = cp_bf;
 
       for(int i = 0; i < (sc_size / 4); i++) 
       {
